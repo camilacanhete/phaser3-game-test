@@ -1,0 +1,35 @@
+{
+    "env": {
+        "es6": true,
+        "es2017": true,
+        "browser": true,
+        "jquery": true
+    },
+    "extends": ["eslint:recommended", "plugin:json/recommended", "plugin:prettier/recommended"],
+    "globals": {        
+        "Atomics": "readonly",
+        "AWS": "readonly",
+        "firebase": "readonly",
+        "Firebase": "readonly",
+        "grecaptcha": "readonly",
+        "gtag": "readonly",        
+        "SharedArrayBuffer": "readonly",
+        "uuidv4": "readonly"
+    },
+    "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "plugins": ["json", "prettier"],
+    "rules": {
+        "indent": ["error", 4, { "SwitchCase": 1 }],
+        "linebreak-style": ["error", "unix"],
+        "quotes": ["error", "single", { "avoidEscape": true }],
+        "semi": ["error", "always"],
+        "no-console": "off",
+        "prettier/prettier": ["error"],
+        "curly": ["error", "all"],
+        "dot-location": ["error", "property"],
+        "dot-notation": ["error"]
+    }
+}

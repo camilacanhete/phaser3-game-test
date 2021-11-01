@@ -1,0 +1,43 @@
+{
+  "name": "Base Game",
+  "version": "1.0.0",
+  "description": "Base Game",
+  "main": "index.js",
+  "scripts": {
+    "lint:js": "eslint --fix '{.,src/**}/*.js'",
+    "build": "webpack --mode production",
+    "start": "webpack --mode development && webpack-dev-server --mode development",
+    "test": "webpack --mode production && webpack-dev-server --mode production"
+  },
+  "browserslist": [
+    "> 0.2%",
+    "last 2 versions",
+    "Firefox ESR"
+  ],
+  "author": "Camila Santos",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-loader": "^8.2.3",
+    "beautify-html-webpack-plugin": "^1.0.3",
+    "clean-webpack-plugin": "^4.0.0",
+    "css-loader": "^6.5.0",
+    "eslint": "^8.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-json": "^3.1.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.5.0",
+    "mini-css-extract-plugin": "^2.4.3",
+    "prettier": "^2.4.1",
+    "sass": "^1.43.4",
+    "sass-loader": "^12.3.0",
+    "terser-webpack-plugin": "^5.2.4",
+    "webpack": "^5.60.0",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.3.1",
+    "webpack-obfuscator": "^3.5.0"
+  },
+  "dependencies": {
+    "phaser": "^3.55.2"
+  }
+}
