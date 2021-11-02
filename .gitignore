@@ -7,9 +7,6 @@ yarn-error.log*
 firebase-debug.log*
 firebase-debug.*.log*
 
-# Compiled binary addons (http://nodejs.org/api/addons.html)
-dist/
-
 # Firebase cache
 .firebase/
 
