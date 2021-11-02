@@ -1,6 +1,7 @@
 # Phaser 3 Game Test
 
-A simple game using object-oriented Javascript (ES6) with Phaser 3 framework and Spine Plugin, bundled using Webpack. 
+A simple responsive game using object-oriented Javascript (ES6) with Phaser 3 framework and Spine Plugin. Bundled using Webpack. 
+Play the game: https://camisfolio-phaser3.web.app
 
 ## Folders
 
@@ -47,3 +48,9 @@ npm run lint:js
 ```
 
 Verify if the javascript code fits the current rules and format the code to make it more readable and maintanable.
+
+## Todo
+
+- [ ] Responsive fonts / hud
+- [ ] Fix world limits when touching down
+- [ ] Fade in/lose effects

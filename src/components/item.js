@@ -87,22 +87,34 @@ export class Item extends Phaser.GameObjects.Image {
             scene.screenHeight / 2,
             scene.textures.get(Const.ATLAS.INGAME),
             "chip"
-        );
-        this.baseScale = 0.75 * this.scene.deviceRatio;
+        );   
+        
+        this.speedMultiplier = (this.scene.sys.game.scale.isPortrait) ? 2 : 1;
         this.screenWidth = this.scene.screenWidth;
         this.screenHeight = this.scene.screenHeight;        
         this.type = type || Item.TYPE.GOOD; //csantos: items can be GOOD or BAD
         this.points = 1; //csantos: how much this item adds to player's score              
         this.label = new LabelPoints(scene);
         this.setAngle(Phaser.Math.Between(0, 360));
-        this.setScale(this.baseScale);        
+        this.setScale();        
         this.maxHeight = scene.screenHeight * 0.85;
         scene.add.existing(this);
         scene.physics.add.existing(this);        
     }
 
+    //@override
+    setScale(scaleX, scaleY) {
+        if(scaleX === undefined) {
+            const height = this.scene.screenHeight * 0.1;
+            scaleX = scaleY = height / this.height;
+            console.log("scale:", scaleX, height, this.height, this.scene.screenHeight);
+        }
+        super.setScale(scaleX, scaleY);        
+        return this;
+    } 
+
     setPhysicsSize() {                
-        this.body.setSize(this.displayWidth, this.displayHeight);               
+        this.body.setSize(this.width, this.height);               
         this.body.updateCenter();
 	}
 
@@ -117,19 +129,18 @@ export class Item extends Phaser.GameObjects.Image {
             case Item.TYPE.BAD:
                 randomItem = Phaser.Math.RND.pick(Item.BAD);
                 this.setTexture(this.texture, randomItem.texture);
-                this.body.setVelocityY(Item.SPEEDY + (score * 10));
-                this.setScale(1 * this.scene.deviceRatio);
+                this.body.setVelocityY(Item.SPEEDY * this.speedMultiplier + (score * 10));                
             break;
             case Item.TYPE.GOOD: 
                 const availableItems = Item.GOOD.filter((item) => score >= item.minScore);
                 randomItem = Phaser.Math.RND.pick(availableItems);
                 this.setTexture(this.texture, randomItem.texture);
                 this.points = randomItem.points;
-                this.body.setVelocityY(Item.SPEEDY);
-                this.setScale(this.baseScale);    
+                this.body.setVelocityY(Item.SPEEDY * this.speedMultiplier);                 
             break;
         }
 
+        this.setScale();
         this.setPosition(Phaser.Math.Between( this.displayWidth, this.screenWidth - this.displayWidth ), -this.displayHeight);                                  
         this.setEnable(true);
         this.setPhysicsSize();
@@ -140,7 +151,9 @@ export class Item extends Phaser.GameObjects.Image {
     update() {    
         if(!this.active) return;
         this.angle += Math.PI;              
-        if(this.y > this.maxHeight) this.remove( Explosion.TEXTURES.MISS );
+        if(this.y > this.maxHeight) {
+            this.remove( (this.type === Item.TYPE.GOOD) ? Explosion.TEXTURES.MISS : Explosion.TEXTURES.BOMB );
+        }
         if(this.angle === 360) this.angle = 0;
     }
 
@@ -148,6 +161,14 @@ export class Item extends Phaser.GameObjects.Image {
         this.setEnable(false);
         this.setActive(false);
         this.setVisible(false);
-        this.scene.onRemoveItem(texture, this.x, this.y);
+        if(texture) this.scene.onRemoveItem(texture, this.x, this.y);
+    }
+
+    onWindowResize(screenWidth, screenHeight, deviceRatio) {        
+        this.screenWidth = screenWidth;
+        this.screenheight = screenHeight;
+        this.maxHeight = screenHeight * 0.85;
+        this.speedMultiplier = (this.scene.sys.game.scale.isPortrait) ? 2 : 1; 
+        this.setScale();       
     }
 }

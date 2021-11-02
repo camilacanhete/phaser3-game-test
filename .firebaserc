@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "camisfolio": {
+      "hosting": {
+        "camisfolio-phaser3": [
+          "camisfolio-phaser3"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "camisfolio"
+  }
+}

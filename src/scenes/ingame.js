@@ -1,9 +1,10 @@
 import { Background } from "../components/background";
 import { Character } from "../components/character";
 import { Explosion } from "../components/explosion";
+import { HUDLives } from "../components/hud-lives";
+import { HUDScore } from "../components/hud-score";
 import { Item } from "../components/item";
 import { LabelCountdown } from "../components/label-countdown";
-import { LabelPoints } from "../components/label-points";
 import { ObjectPool } from "../components/object-pool";
 import { Const } from "../game/const";
 import { Scene } from "./scene";
@@ -13,6 +14,7 @@ export class Ingame extends Scene {
     constructor() {
         super();
         this.score = 0;
+        this.lives = 1;
         this.state = Const.GAME_STATE.PAUSED;
     }
 
@@ -24,18 +26,32 @@ export class Ingame extends Scene {
 
     bindEvents() {
         console.log("Ingame: binding events...");
-        super.bindEvents();        
-        this.input.keyboard.on(Phaser.Input.Keyboard.Events.ANY_KEY_DOWN, this.onKeyPress, this);
-        this.input.keyboard.on(Phaser.Input.Keyboard.Events.ANY_KEY_UP, this.onKeyUp, this);
+        super.bindEvents();   
+        
+        this.input.on(Phaser.Input.Events.POINTER_DOWN, this.onPointerDown, this);
+        this.input.on(Phaser.Input.Events.POINTER_UP, this.onPointerUp, this);
+        if(!this.isMobile()) {
+            this.input.keyboard.on(Phaser.Input.Keyboard.Events.ANY_KEY_DOWN, this.onKeyPress, this);
+            this.input.keyboard.on(Phaser.Input.Keyboard.Events.ANY_KEY_UP, this.onKeyUp, this) ;
+        }        
     }
 
-    createComponents() {        
+    isMobile() {
+        if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {        
+            return true;
+        }
+        return false;
+    }
+
+    createComponents() {                
         this.background = new Background(this);
+        this.hudLives = new HUDLives(this);
+        this.hudScore = new HUDScore(this);
         this.explosion = new Explosion(this);                
         this.pool = new ObjectPool(this);
         this.character = new Character(this);
         this.counter = new LabelCountdown(this);
-        //this.points = new LabelPoints(this);
+        this.music = this.sound.add(Const.AUDIO.CLASSIC, { loop: true, volume: 0.5 });        
 
         this.collider = this.physics.add.overlap(
             this.character,
@@ -48,7 +64,13 @@ export class Ingame extends Scene {
     }   
 
     startGame() {
+        this.score = 0;
+        this.lives = 1;
+        this.hudLives.setText(this.lives);
+        this.hudScore.setText(this.score);
+        this.music.play();
         this.character.onGameStart();
+        if(this.timer) this.timer.remove();
         this.timer = this.time.addEvent({
             delay: 1000, // ms                
             callback: this.countdown,
@@ -63,20 +85,21 @@ export class Ingame extends Scene {
             this.counter.setText();
             this.timer.remove();
             this.timer = this.time.addEvent({
-                delay: 1000, // ms                
+                delay: 750, // ms                
                 callback: this.spawnItem,
                 callbackScope: this,            
                 loop: true
             });
         } else {
+            this.sound.play(Const.AUDIO.BEEP);
             this.counter.setText(this.timer.getRepeatCount());
         }
     }
 
     addPoints(item) {
         this.score += item.points;
-        item.label.play(item.x, item.y, item.points);
-        console.log("Score:", this.score);
+        this.hudScore.setText(this.score);
+        item.label.play(item.x, item.y, item.points);                
     }
 
     spawnItem() {
@@ -86,24 +109,50 @@ export class Ingame extends Scene {
     collectItem(character, item) {
         if(!item.active) return;
         if(item.type === Item.TYPE.GOOD) {                        
-            item.remove( Explosion.TEXTURES.POINT );
-            //this.points.play(item.x, item.y, item.points);
-            this.addPoints(item);            
+            item.remove( Explosion.TEXTURES.POINT );            
+            this.addPoints(item)
+            this.sound.play(Const.AUDIO.POP);            
         } else {
-            item.remove( Explosion.TEXTURES.LOSE );
-            this.onGameOver();
+            this.lives--;   
+            this.hudLives.setText(this.lives);         
+            this.sound.play(Const.AUDIO.EXPLODE);
+            if(this.lives <= 0) {
+                item.remove( Explosion.TEXTURES.LOSE );
+                this.onGameOver();
+            }
         }        
     }
 
     onGameOver() {
         this.state = Const.GAME_STATE.OVER;
-        this.timer.remove();
+        this.music.stop();
+        this.sound.play(Const.AUDIO.LOSE);
         this.character.onGameOver();
-        this.startGame();
+        this.pool.onGameOver();
+        this.timer.remove();        
+        this.timer = this.time.addEvent({
+            delay: 3000, // ms                
+            callback: this.startGame,
+            callbackScope: this
+        });
     }
 
     onRemoveItem(type, x, y) {
         this.explosion.explode(type, x, y);
+    }
+
+    onPointerDown(pointer) {
+        if(this.state !== Const.GAME_STATE.START) return;        
+        if(pointer.x <= this.screenWidth / 2) {
+            this.character.move(Character.DIRECTION.LEFT);
+        } else {
+            this.character.move(Character.DIRECTION.RIGHT);
+        }
+    }
+
+    onPointerUp(pointer) {   
+        if(this.state !== Const.GAME_STATE.START) return;     
+        this.character.stop();
     }
 
     onKeyPress(e) {    
@@ -133,6 +182,12 @@ export class Ingame extends Scene {
     //csantos: custom function to resize all scene elements
     onWindowResize() {       
         super.onWindowResize();   
-        this.background.onWindowResize(this.screenWidth, this.screenHeight);          
+        this.background.onWindowResize(this.screenWidth, this.screenHeight);  
+        this.character.onWindowResize(this.screenWidth, this.screenHeight, this.deviceRatio);  
+        this.pool.onWindowResize(this.screenWidth, this.screenHeight, this.deviceRatio);  
+        this.explosion.onWindowResize(this.screenWidth, this.screenHeight);
+        this.hudLives.onWindowResize(this.screenWidth, this.screenHeight);
+        this.hudScore.onWindowResize(this.screenWidth, this.screenHeight);
+        this.counter.onWindowResize(this.screenWidth, this.screenHeight);
     } 
 }

@@ -13,4 +13,8 @@ export class LabelCountdown extends Phaser.GameObjects.BitmapText {
         this.setDropShadow(6, 6, 0x5b3d82, 1);
         scene.add.existing(this);
     }
+
+    onWindowResize(screenWidth, screenHeight){
+        this.setPosition(screenWidth / 2, screenHeight / 2);
+    }
 }

@@ -23,21 +23,32 @@ export class Character extends Phaser.GameObjects.Container {
             scene.screenHeight * 0.85
         ); 
         
+        this.speedMultiplier = (this.scene.sys.game.scale.isPortrait) ? 1.5 : 1;
         this.animation = Character.ANIMATION.IDLE;
         this.direction = Character.DIRECTION.LEFT; //csantos: movement direction
         this.character = scene.add.spine(0, 0, Const.SPINE.CHARACTER, this.animation, true);
         this.screenWidth = scene.screenWidth;
-        this.screenheight = scene.screenHeight;          
-        this.character.scaleX = this.character.scaleY = 0.75 * this.scene.deviceRatio;
+        this.screenheight = scene.screenHeight;            
+        this.setCharacterScale();        
         scene.add.existing(this);
         scene.physics.add.existing(this); 
         
-        const bounds = this.character.getBounds();
-        this.setPhysicsSize(bounds.size.x * 0.75, bounds.size.y * 0.9);
+        this.setPhysicsSize();
         this.add(this.character);
     }
 
-    setPhysicsSize(width, height) {        
+    setCharacterScale() {        
+        const height = this.scene.screenHeight * 0.22;
+        const scale = height / this.character.height; 
+        console.log("character scale:", scale, this.character.height);
+        this.character.setScale(scale);
+        this.character.scaleX *= this.direction;
+    } 
+
+    setPhysicsSize() { 
+        const bounds = this.character.getBounds();  
+        const width = bounds.size.x * 0.75;
+        const height = bounds.size.y * 0.9;
         this.body.setSize(width, height);
 		this.body.setOffset(width * -0.5, -height);		        
 	}
@@ -62,7 +73,7 @@ export class Character extends Phaser.GameObjects.Container {
             this.body.setVelocityX(0);                           
             return;                            
         }
-        this.body.setVelocityX(Character.SPEED * direction);
+        this.body.setVelocityX(Character.SPEED * direction * this.speedMultiplier);
     }
 
     stop() {
@@ -77,8 +88,7 @@ export class Character extends Phaser.GameObjects.Container {
         this.body.enable = true;        
         this.animation = Character.ANIMATION.IDLE;
         this.direction = Character.DIRECTION.LEFT; //csantos: movement direction
-        this.character.scaleX = this.character.scaleY = 0.75 * this.scene.deviceRatio;
-        this.character.scaleX *= this.direction;
+        this.setCharacterScale();
         this.setPosition(this.scene.screenWidth / 2, this.scene.screenHeight * 0.85);        
         this.setSkin('default');  
     }
@@ -88,5 +98,14 @@ export class Character extends Phaser.GameObjects.Container {
         this.body.enable = false;
         this.animation = Character.ANIMATION.LOSE;
         this.setSkin('skinsad');
+    }
+
+    onWindowResize(screenWidth, screenHeight, deviceRatio) {        
+        this.screenWidth = screenWidth;
+        this.screenheight = screenHeight;
+        this.speedMultiplier = (this.scene.sys.game.scale.isPortrait) ? 1.5 : 1;
+        this.setCharacterScale();        
+        this.setPosition(screenWidth / 2, screenHeight * 0.85);
+        this.setPhysicsSize();
     }
 }

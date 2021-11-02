@@ -12,7 +12,7 @@ export class Background extends Phaser.GameObjects.TileSprite {
             "fondo"
         );     
         
-        const image = scene.textures.get(Const.ATLAS.INGAME).getSourceImage(); 
+        const image = scene.textures.get(Const.ATLAS.INGAME).get("fondo");        
         this.textureWidth = image.width;
         this.textureHeight = image.height;
     

@@ -13,11 +13,11 @@ export class LabelPoints extends Phaser.GameObjects.BitmapText {
         scene.add.existing(this);
     }
 
-    play(x, y, text) {
+    play(x, y, value) {
         this.alpha = 1;
         this.x = x;
         this.y = y;
-        this.text = "+" + text;
+        this.text = "+" + value;
         this.scene.tweens.add({
             targets: this,                                          
             ease: 'Linear',

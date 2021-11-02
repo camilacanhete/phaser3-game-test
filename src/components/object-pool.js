@@ -18,10 +18,12 @@ export class ObjectPool extends Phaser.GameObjects.Group {
 		const item = this.get();
 
 		//csantos: reached maximum amount of items in group
+		//console.log("ObjectPool:", this.getLength(), this.getTotalUsed());
 		if (!item) return;
 
 		this.countChildren++;
-		item.setItem((this.countChildren % 3 === 0) ? Item.TYPE.BAD : Item.TYPE.GOOD, score);
+
+		item.setItem((this.countChildren % 3 === 0) ? Item.TYPE.BAD : Item.TYPE.GOOD, score);		
 
 		return item;		
 	}
@@ -29,4 +31,16 @@ export class ObjectPool extends Phaser.GameObjects.Group {
 	despawn(item) {		
 		item.remove();
 	}
+
+	onGameOver() {
+        this.children.each(child => {
+			child.remove();
+		});
+    }
+
+	onWindowResize(screenWidth, screenHeight, deviceRatio) {        
+        this.children.each(child => {
+			child.onWindowResize(screenWidth, screenHeight, deviceRatio);
+		});
+    }
 }

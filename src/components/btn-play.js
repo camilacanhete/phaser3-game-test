@@ -13,8 +13,9 @@ export class BtnPlay extends Phaser.GameObjects.Image {
             active: false
         }
 
-        this.changeScene = this.changeScene.bind(this);                
-        this.setScale(this.scaleX * this.scene.deviceRatio);
+        this.baseScale = (this.scene.deviceRatio >= 2) ? 2 : 1;
+        this.changeScene = this.changeScene.bind(this);      
+        this.setScale(this.baseScale);
         this.setPosition(scene.screenWidth / 2, scene.screenHeight / 2 + this.displayHeight);
         this.setInteractive();
         this.bindEvents();

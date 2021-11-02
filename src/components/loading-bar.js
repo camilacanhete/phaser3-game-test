@@ -4,6 +4,7 @@ export class LoadingBar {
 
     constructor(scene) {
         this.scene = scene;
+        this.baseScale = (this.scene.deviceRatio >= 2) ? 2 : 1;
         this.backgroundImage = null;
         this.foregroundImage = null;
         this.mask = null;
@@ -22,7 +23,7 @@ export class LoadingBar {
             this.scene.screenHeight / 2,
             texture, "carga2"
         );
-        this.backgroundImage.setScale(this.backgroundImage.scaleX * this.scene.deviceRatio);
+        this.backgroundImage.setScale(this.baseScale);
         this.fitToScreen(this.backgroundImage);        
         this.scene.add.existing(this.backgroundImage);        
 
@@ -33,7 +34,7 @@ export class LoadingBar {
             this.scene.screenHeight / 2,
             texture, "carga1"
         );        
-        this.foregroundImage.setScale(this.foregroundImage.scaleX * this.scene.deviceRatio);
+        this.foregroundImage.setScale(this.baseScale);
         this.fitToScreen(this.foregroundImage);
         this.scene.add.existing(this.foregroundImage);
 
@@ -77,7 +78,10 @@ export class LoadingBar {
         this.mask.x = (this.backgroundImage.x - this.backgroundImage.displayWidth / 2) + stepWidth;
     }
 
-    onWindowResize(screenWidth, screenHeight) {         
+    onWindowResize(screenWidth, screenHeight, deviceRatio) {         
+        this.baseScale = (deviceRatio >= 2) ? 2 : 1;
+        this.backgroundImage.setScale(this.baseScale);
+        this.foregroundImage.setScale(this.baseScale);
         this.fitToScreen(this.backgroundImage);       
         this.fitToScreen(this.foregroundImage);       
         this.backgroundImage.setPosition(screenWidth / 2, screenHeight / 2);
