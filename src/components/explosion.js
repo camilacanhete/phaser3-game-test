@@ -35,7 +35,7 @@ export class Explosion extends Phaser.GameObjects.Particles.ParticleEmitterManag
     }
 
     setBaseScale(screenWidth, screenHeight) {
-        const height = screenHeight * 0.05;
+        const height = screenHeight * 0.032;
         this.baseScale = height / this.textureHeight;        
     }
 
@@ -45,8 +45,11 @@ export class Explosion extends Phaser.GameObjects.Particles.ParticleEmitterManag
     }
 
     onWindowResize(screenWidth, screenHeight) {        
-        this.setBaseScale(screenWidth, screenHeight);   
-        this.emitter.remove();   
-        this.emitter = this.createEmitter(this.customConfig);
+        this.setBaseScale(screenWidth, screenHeight); 
+        this.emitter.remove();                   
+        this.emitter = this.createEmitter({
+            ...this.customConfig,
+            scale: { random: [this.baseScale * 0.75, 1.5 * this.baseScale] }
+        });
     }
 }

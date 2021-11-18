@@ -12,10 +12,9 @@ export class BtnPlay extends Phaser.GameObjects.Image {
         this.state = {            
             active: false
         }
-
-        this.baseScale = (this.scene.deviceRatio >= 2) ? 2 : 1;
+        
         this.changeScene = this.changeScene.bind(this);      
-        this.setScale(this.baseScale);
+        this.setScale();
         this.setPosition(scene.screenWidth / 2, scene.screenHeight / 2 + this.displayHeight);
         this.setInteractive();
         this.bindEvents();
@@ -23,13 +22,22 @@ export class BtnPlay extends Phaser.GameObjects.Image {
         scene.add.existing(this);
     }
 
-    bindEvents() {        
-        this.on(Phaser.Input.Events.POINTER_DOWN, this.onClick, this);
+    //@override
+    setScale(scaleX, scaleY) {
+        if(scaleX === undefined) {
+            const height = this.scene.screenHeight * 0.08;
+            scaleX = scaleY = height / this.height;            
+        }
+        super.setScale(scaleX, scaleY);        
+        return this;
     }
 
+    bindEvents() {        
+        this.on(Phaser.Input.Events.POINTER_DOWN, this.onClick, this);
+    }    
+
     onClick() {                
-        if(this.state.active) {            
-            console.log("BtnPlay: click");   
+        if(this.state.active) {                        
             this.scene.sound.play(Const.AUDIO.CLICK); 
             this.scene.tweens.add({
                 targets: this,
@@ -43,7 +51,7 @@ export class BtnPlay extends Phaser.GameObjects.Image {
     }
 
     changeScene() {
-        this.scene.scene.start(Const.SCENES.INGAME);
+        this.scene.onGameStart();
     }
 
     setActiveState(active) {        
@@ -55,7 +63,14 @@ export class BtnPlay extends Phaser.GameObjects.Image {
         }
     }
 
-    onWindowResize(screenWidth, screenHeight, deviceRatio) {            
+    onWindowResize(screenWidth, screenHeight) { 
+        this.setScale();           
         this.setPosition(screenWidth / 2, screenHeight / 2 + this.displayHeight);       
+    }
+
+    remove() {
+        console.log("BtnPLay: removing events...");
+        this.off(Phaser.Input.Events.POINTER_DOWN, this.onClick, this);
+        super.remove();
     }
 }

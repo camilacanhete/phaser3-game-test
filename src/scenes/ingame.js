@@ -25,22 +25,14 @@ export class Ingame extends Scene {
     }
 
     bindEvents() {
-        console.log("Ingame: binding events...");
-        super.bindEvents();   
-        
+        console.log("Ingame: binding events...", this.scene);
+        super.bindEvents();           
         this.input.on(Phaser.Input.Events.POINTER_DOWN, this.onPointerDown, this);
         this.input.on(Phaser.Input.Events.POINTER_UP, this.onPointerUp, this);
         if(!this.isMobile()) {
             this.input.keyboard.on(Phaser.Input.Keyboard.Events.ANY_KEY_DOWN, this.onKeyPress, this);
             this.input.keyboard.on(Phaser.Input.Keyboard.Events.ANY_KEY_UP, this.onKeyUp, this) ;
-        }        
-    }
-
-    isMobile() {
-        if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {        
-            return true;
-        }
-        return false;
+        } 
     }
 
     createComponents() {                
@@ -181,7 +173,9 @@ export class Ingame extends Scene {
 
     //csantos: custom function to resize all scene elements
     onWindowResize() {       
-        super.onWindowResize();   
+        super.onWindowResize(); 
+        this.physics.world.bounds.width = this.screenWidth;
+        this.physics.world.bounds.height = this.screenHeight;  
         this.background.onWindowResize(this.screenWidth, this.screenHeight);  
         this.character.onWindowResize(this.screenWidth, this.screenHeight, this.deviceRatio);  
         this.pool.onWindowResize(this.screenWidth, this.screenHeight, this.deviceRatio);  

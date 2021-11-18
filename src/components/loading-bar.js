@@ -22,9 +22,8 @@ export class LoadingBar {
             this.scene.screenWidth / 2, 
             this.scene.screenHeight / 2,
             texture, "carga2"
-        );
-        this.backgroundImage.setScale(this.baseScale);
-        this.fitToScreen(this.backgroundImage);        
+        );        
+        this.setScale(this.backgroundImage);        
         this.scene.add.existing(this.backgroundImage);        
 
         //csantos: add foreground image
@@ -33,9 +32,8 @@ export class LoadingBar {
             this.scene.screenWidth / 2, 
             this.scene.screenHeight / 2,
             texture, "carga1"
-        );        
-        this.foregroundImage.setScale(this.baseScale);
-        this.fitToScreen(this.foregroundImage);
+        );                
+        this.setScale(this.foregroundImage);
         this.scene.add.existing(this.foregroundImage);
 
         this.maskShape = new Phaser.Geom.Rectangle(
@@ -61,7 +59,11 @@ export class LoadingBar {
         );                 
     }
 
-    fitToScreen(image) {              
+    setScale(image) {   
+        const height = this.scene.screenHeight * 0.05;
+        const scaleX = height / image.height;
+        image.setScale(scaleX);
+
         if(image.displayWidth > this.scene.screenWidth - 100) {
             image.displayWidth = this.scene.screenWidth - 100;
             image.scaleY = image.scaleX;
@@ -78,12 +80,9 @@ export class LoadingBar {
         this.mask.x = (this.backgroundImage.x - this.backgroundImage.displayWidth / 2) + stepWidth;
     }
 
-    onWindowResize(screenWidth, screenHeight, deviceRatio) {         
-        this.baseScale = (deviceRatio >= 2) ? 2 : 1;
-        this.backgroundImage.setScale(this.baseScale);
-        this.foregroundImage.setScale(this.baseScale);
-        this.fitToScreen(this.backgroundImage);       
-        this.fitToScreen(this.foregroundImage);       
+    onWindowResize(screenWidth, screenHeight) {                         
+        this.setScale(this.backgroundImage);       
+        this.setScale(this.foregroundImage);       
         this.backgroundImage.setPosition(screenWidth / 2, screenHeight / 2);
         this.foregroundImage.setPosition(screenWidth / 2, screenHeight / 2);                        
         this.foregroundImage.clearMask(true);

@@ -27,6 +27,7 @@ export class Const {
     }
 
     static FONT = {
+        BASE_SCREEN_SIZE: 1024,
         FREDOKA: "FONT_FREDOKA",
         FREDOKA_NUMBER: "FONT_FREDOKA_ONE"
     }

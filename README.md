@@ -51,6 +51,4 @@ Verify if the javascript code fits the current rules and format the code to make
 
 ## Todo
 
-- [ ] Responsive fonts / hud
-- [ ] Fix world limits when touching down
 - [ ] Fade in/lose effects

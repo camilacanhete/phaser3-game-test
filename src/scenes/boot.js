@@ -16,8 +16,14 @@ export class Boot extends Scene {
 
     //@override
     create() {
-        console.log("Boot: loading complete");
-        this.domElement.remove();        
-        this.scene.start(Const.SCENES.LOADING);            
+        console.log("Boot: loading complete");    
+        super.create();    
+        this.domElement.remove();
+        this.scene.start(Const.SCENES.LOADING);                        
     }
+
+    bindEvents() {
+        this.events.on(Phaser.Scenes.Events.SHUTDOWN, this.onShutdown, this);
+    }
+    
 }

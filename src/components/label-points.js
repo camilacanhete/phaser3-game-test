@@ -1,6 +1,9 @@
 import { Const } from "../game/const";
 
 export class LabelPoints extends Phaser.GameObjects.BitmapText {
+
+    static FONTSIZE = 60;
+
     constructor(scene) {
         super(
             scene,
@@ -8,8 +11,11 @@ export class LabelPoints extends Phaser.GameObjects.BitmapText {
             scene.screenHeight / 2,
             Const.FONT.FREDOKA
         );
-        this.setOrigin(0.5);   
-        this.setFontSize(60);          
+        this.baseWidth = scene.screenWidth;
+        this.baseHeight = scene.screenHeight;
+        this.setOrigin(0.5);  
+        this.setTint(0x692bf6); 
+        this.setTextScale();                  
         scene.add.existing(this);
     }
 
@@ -35,5 +41,17 @@ export class LabelPoints extends Phaser.GameObjects.BitmapText {
                 }                
             }
           }, this);
+    }  
+    
+    setTextScale() {              
+        const scale = this.baseHeight / Const.FONT.BASE_SCREEN_SIZE;
+        this.setFontSize(LabelPoints.FONTSIZE * scale);        
+    }
+
+    onWindowResize(screenWidth, screenHeight) {
+        this.baseWidth = screenWidth;
+        this.baseHeight = screenHeight;
+        this.setTextScale();
+        this.setPosition(screenWidth / 2, screenHeight / 2);
     }
 }

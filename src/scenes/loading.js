@@ -28,10 +28,11 @@ export class Loading extends Scene {
 
     bindEvents() {  
         console.log("Loading: binding events");
-        super.bindEvents();
+        super.bindEvents(); 
+        this.events.on(Phaser.Scenes.Events.SHUTDOWN, this.onShutdown, this);               
         this.load.once(Phaser.Loader.Events.COMPLETE, this.onLoadComplete, this);
-        this.load.on(Phaser.Loader.Events.PROGRESS, this.onLoading, this);        
-    }
+        this.load.on(Phaser.Loader.Events.PROGRESS, this.onLoading, this);                
+    }        
 
     createComponents() {        
         this.loadingBar = new LoadingBar(this);
@@ -61,7 +62,14 @@ export class Loading extends Scene {
     onLoadComplete() {
         console.log("Loading: loaded assets succesfully");
         this.btnPlay.setActiveState(true);
-    }     
+    }    
+    
+    onGameStart() {
+        if(this.isMobile()) {
+            document.documentElement.requestFullscreen();   
+        }
+        this.scene.start(Const.SCENES.INGAME);
+    }
 
     onWindowResize() {
         super.onWindowResize();

@@ -88,10 +88,10 @@ export class Item extends Phaser.GameObjects.Image {
             scene.textures.get(Const.ATLAS.INGAME),
             "chip"
         );   
-        
-        this.speedMultiplier = (this.scene.sys.game.scale.isPortrait) ? 2 : 1;
+                
         this.screenWidth = this.scene.screenWidth;
-        this.screenHeight = this.scene.screenHeight;        
+        this.screenHeight = this.scene.screenHeight;              
+        this.speedMultiplier = 1;
         this.type = type || Item.TYPE.GOOD; //csantos: items can be GOOD or BAD
         this.points = 1; //csantos: how much this item adds to player's score              
         this.label = new LabelPoints(scene);
@@ -105,10 +105,10 @@ export class Item extends Phaser.GameObjects.Image {
     //@override
     setScale(scaleX, scaleY) {
         if(scaleX === undefined) {
-            const height = this.scene.screenHeight * 0.1;
-            scaleX = scaleY = height / this.height;
-            console.log("scale:", scaleX, height, this.height, this.scene.screenHeight);
+            const height = this.scene.screenHeight * 0.085;
+            scaleX = scaleY = height / this.height;            
         }
+        this.speedMultiplier = Math.abs(scaleX) * (this.scene.sys.game.scale.isGamePortrait ? 1 : 2);        
         super.setScale(scaleX, scaleY);        
         return this;
     } 
@@ -164,11 +164,11 @@ export class Item extends Phaser.GameObjects.Image {
         if(texture) this.scene.onRemoveItem(texture, this.x, this.y);
     }
 
-    onWindowResize(screenWidth, screenHeight, deviceRatio) {        
+    onWindowResize(screenWidth, screenHeight) {        
         this.screenWidth = screenWidth;
         this.screenheight = screenHeight;
-        this.maxHeight = screenHeight * 0.85;
-        this.speedMultiplier = (this.scene.sys.game.scale.isPortrait) ? 2 : 1; 
+        this.maxHeight = screenHeight * 0.85;                
+        this.label.onWindowResize(screenWidth, screenHeight);
         this.setScale();       
     }
 }
